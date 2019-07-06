@@ -6,6 +6,8 @@
 // =============================================================
 var express = require("express");
 var exphbs = require("express-handlebars");
+var bodyParser = require("body-parser")
+var methodOverride = require("method-override")
 
 // Sets up the Express App
 // =============================================================
@@ -20,21 +22,24 @@ app.set("view engine", "handlebars");
 var db = require("./models");
 
 // Sets up the Express app to handle data parsing
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
+// Lets us use put and delete verbage by overriding post verbage 
+app.use(methodOverride('_method'));
 
 // Static directory
 app.use(express.static("public"));
 
 // Routes
 // =============================================================
-var routes = require("./controllers/burgers_controllers.js");
-app.use(routes);
+require("./controllers/burgers_controllers.js");
+
 
 
 // Syncing our sequelize models and then starting our Express app
 // =============================================================
-db.sequelize.sync({ force: true }).then(function() {
+db.sequelize.sync({ force: false}).then(function() {
   app.listen(PORT, function() {
     console.log("App listening on PORT " + PORT);
   });
